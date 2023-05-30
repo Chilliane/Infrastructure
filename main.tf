@@ -57,7 +57,6 @@ resource "aws_internet_gateway" "gw" {
 #Create public routing table
 resource "aws_route_table" "public_routing_table" {
   vpc_id = aws_vpc.example.id
-
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.gw.id #Provide connection to Internet
@@ -69,8 +68,18 @@ resource "aws_route_table" "public_routing_table" {
 #Create private routing table
 resource "aws_route_table" "private_routing_table" {
   vpc_id = aws_vpc.example.id
-
   tags = {
     Name = "RouteTerraformPrivate"
   }
+}
+# Create public Routing Table Association
+resource "aws_route_table_association" "public" {
+  subnet_id = aws_subnet.subnet[0].id # Public subnet
+  route_table_id = aws_route_table.public_routing_table.id
+}
+
+# Create private Routing Table Association
+resource "aws_route_table_association" "private" {
+  subnet_id = aws_subnet.subnet[1].id # private subnet
+  route_table_id = aws_route_table.private_routing_table.id
 }
