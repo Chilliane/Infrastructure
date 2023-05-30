@@ -84,7 +84,7 @@ resource "aws_route_table_association" "private" {
   subnet_id = aws_subnet.subnet[1].id # private subnet
   route_table_id = aws_route_table.private_routing_table.id
 }
-#Create EC2 Instance
+#Create public EC2 Instance
 resource "aws_instance" "publicEC2" {
   ami = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
@@ -93,6 +93,16 @@ resource "aws_instance" "publicEC2" {
   security_groups = [aws_security_group.allowssh.id]
   tags = {
     Name = "PublicEC2"
+  }
+}
+#Create private EC2 Instance
+resource "aws_instance" "privateEC2" {
+  ami = "ami-0715c1897453cabd1"
+  instance_type = "t2.micro"
+  associate_public_ip_address = false
+  subnet_id = aws_subnet.subnet[1].id
+  tags = {
+    Name = "PrivateEC2"
   }
 }
 
