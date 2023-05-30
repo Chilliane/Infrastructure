@@ -86,7 +86,7 @@ resource "aws_route_table_association" "private" {
 }
 #Create public EC2 Instance
 resource "aws_instance" "publicEC2" {
-  ami = data.aws_ami.ubuntu.id
+  ami = "ami-0715c1897453cabd1"
   instance_type = "t2.micro"
   subnet_id = aws_subnet.subnet[0].id
   associate_public_ip_address = true
@@ -104,23 +104,6 @@ resource "aws_instance" "privateEC2" {
   tags = {
     Name = "PrivateEC2"
   }
-}
-
-#Ubuntu Image for the EC2 Instance
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
 }
 
 #Securty Policy to Allow SSH
