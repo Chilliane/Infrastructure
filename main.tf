@@ -69,6 +69,10 @@ resource "aws_route_table" "public_routing_table" {
 #Create private routing table
 resource "aws_route_table" "private_routing_table" {
   vpc_id = aws_vpc.example.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id 
+  }
   tags = {
     Name = "RouteTerraformPrivate"
   }
@@ -101,6 +105,7 @@ resource "aws_instance" "privateEC2" {
   instance_type = "t2.micro"
   associate_public_ip_address = false
   subnet_id = aws_subnet.subnet[1].id
+  security_groups = [aws_security_group.allowssh.id]
   tags = {
     Name = "PrivateEC2"
   }
@@ -129,4 +134,19 @@ resource "aws_security_group" "allowssh" {
   tags = {
     Name = "Allow_SSH"
   }
+}
+#EIP for NAT Gateway
+resource "aws_eip" "eip1" {
+  vpc = true
+  tags = {
+    Name = "EIP 1"
+  }
+}
+#Create NAT Gateway for private EC2
+resource "aws_nat_gateway" "nat-gateway" {
+  allocation_id = aws_eip.eip1.id
+  subnet_id = aws_subnet.subnet[0].id
+  tags = {
+    Name = "Public Nat Gateway"
+ }
 }
